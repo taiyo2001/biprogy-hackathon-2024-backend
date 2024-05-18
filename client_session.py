@@ -24,7 +24,7 @@ APPID=1
 
 def get_time_now():
     time_now = datetime.datetime.now()
-    time_data = time_now.strftime("%Y-%m-%dT%H:%M+09:00")
+    time_data = time_now.strftime("%Y-%m-%d %H:%M")
     return time_data
 
 
