@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from db_session import post_todo, get_todo, put_start_time
-import datetime
-import Optional
+from datetime import datetime
+from typing import Optional, List
 
 app = FastAPI()
 
@@ -11,6 +11,15 @@ class Todo(BaseModel):
     task: str
     time: int
     startTime: Optional[str]
+
+    @classmethod
+    def from_dict(cls, obj: dict):
+        return cls(
+            worker=obj['worker']['value'],
+            task=obj['task']['value'],
+            time=int(obj['time']['value']),
+            startTime=obj['startTime']['value']
+        )
 
 class startTime(BaseModel):
     id: int
@@ -54,30 +63,39 @@ async def todo_register(todo: Todo, status_code=201):
 @app.get("/todo/get")
 async def todo_get():
     try:
-        todo: Todo = get_todo()
-        if todo.startTime == "-1":
-            trouble_level = 0
-        else:
-            start_time = datetime.strptime(todo.startTime, "%Y-%m-%d %H:%M")
-            current_time = datetime.now()
-            diff_minutes = (current_time - start_time).total_seconds() / 60
-            task_time = todo.time
+        response = get_todo()  
+        results = []
+        
+        if 'records' in response:
+            for record in response['records']:
+                todo = Todo.from_dict(record)
 
-            if diff_minutes >= task_time * 2:
-                trouble_level = 10
-            elif diff_minutes <= task_time:
-                trouble_level = 5 * diff_minutes / task_time
-            else:
-                trouble_level = 5 + 5 * (diff_minutes - task_time) / task_time
+                if todo.startTime == "-1":
+                    trouble_level = 0
+                else:
+                    start_time = datetime.strptime(todo.startTime, "%Y-%m-%d %H:%M")
+                    current_time = datetime.now()
+                    diff_minutes = (current_time - start_time).total_seconds() / 60
+                    task_time = todo.time
 
-            trouble_level = round(trouble_level)
+                    if diff_minutes >= task_time * 2:
+                        trouble_level = 10
+                    elif diff_minutes <= task_time:
+                        trouble_level = 5 * diff_minutes / task_time
+                    else:
+                        trouble_level = 5 + 5 * (diff_minutes - task_time) / task_time
 
-        return {
-            "worker": todo.worker,
-            "task": todo.task,
-            "time": todo.time,
-            "trouble_level": trouble_level
-        }
+                    trouble_level = round(trouble_level)
+
+                results.append({
+                    "worker": todo.worker,
+                    "task": todo.task,
+                    "time": todo.time,
+                    "trouble_level": trouble_level
+                })
+
+            return results
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get Todo: {str(e)}")
     
