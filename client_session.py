@@ -31,7 +31,7 @@ async def todo_register(todo: Todo, status_code=201):
 @app.get("/todo/get")
 async def todo_get():
     try:
-        return await get_todo()
+        return get_todo()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get Todo: {str(e)}")
 

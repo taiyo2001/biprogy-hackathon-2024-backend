@@ -34,12 +34,12 @@ def get_todo():
     params = {"app": APPID}
     resp = requests.get(URL + "records.json", headers=headers, params=params)
 
-    return resp
+    return resp.json()
 
-if __name__=="__main__":
-    # POST
-    resp=post_todo(PARAMS)
-    print(resp.text)
+# if __name__=="__main__":
+#     # POST
+#     resp=post_todo(PARAMS)
+#     print(resp.text)
 
     # GET
     # resp = get_todo()
