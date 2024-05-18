@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from db_session import post_todo, get_todo
+import json
+
 app = FastAPI()
 
 class Todo(BaseModel):
@@ -16,14 +18,30 @@ class qa_archive(BaseModel):
     evaluation: int
     comment: str
 
+APPID=1
+
 
 @app.post("/todo/post")
 async def todo_register(todo: Todo, status_code=201):
+    # todo_data = todo.model_dump()
 
-    todo_data = todo.model_dump()
+    todo_data = {
+        "app": APPID,
+        "record":{
+            "worker":{
+                "value": todo.worker
+            },
+            "task":{
+                "value": todo.task
+            },
+            "time":{
+                "value": todo.time
+            }
+        }
+    }
 
     try:
-        await post_todo(todo_data)
+        post_todo(todo_data)
         return {"message": "Todo registered successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to register Todo: {str(e)}")
