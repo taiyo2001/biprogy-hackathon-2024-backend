@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from db_session import post_todo, get_todo, put_start_time
+from db_session import post_todo, get_todo, put_start_time, delete_todo
 import datetime
-import Optional
+from typing import Optional
 
 app = FastAPI()
 
@@ -13,6 +13,9 @@ class Todo(BaseModel):
     startTime: Optional[str]
 
 class startTime(BaseModel):
+    id: int
+
+class endTodo(BaseModel):
     id: int
 
 APPID=1
@@ -98,3 +101,13 @@ async def start_time_put(startTime: startTime, status_code=201):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to put StartTime: {str(e)}")
     
+@app.delete("/todo/put/end")
+async def delete_todo(endTodo: endTodo, status_code=201):
+    end_data = {
+        "app": APPID,
+        "ids": [endTodo.id]
+    }
+    try:
+        return delete_todo(end_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to put StartTime: {str(e)}")
