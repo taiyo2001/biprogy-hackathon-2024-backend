@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from db_session import post_todo, get_todo, put_start_time
 import datetime
+import Optional
 
 app = FastAPI()
 
@@ -9,22 +10,16 @@ class Todo(BaseModel):
     worker: str
     task: str
     time: int
-    id: str
+    startTime: Optional[str]
 
-class qa_archive(BaseModel):
-    questioner: str
-    respondent: str
-    question: str
-    answer: str
-    evaluation: int
-    comment: str
-
+class startTime(BaseModel):
+    id: int
 
 APPID=1
 
 def get_time_now():
     time_now = datetime.datetime.now()
-    time_data = time_now.strftime("%Y-%m-%d %H:%M")
+    time_data = time_now.strftime("%Y-%m-%dT%H:%M+09:00")
     return time_data
 
 
@@ -43,6 +38,9 @@ async def todo_register(todo: Todo, status_code=201):
             },
             "time":{
                 "value": todo.time
+            },
+            "startTime":{
+                "value": "-1"
             }
         }
     }
@@ -56,16 +54,39 @@ async def todo_register(todo: Todo, status_code=201):
 @app.get("/todo/get")
 async def todo_get():
     try:
-        return get_todo()
+        todo: Todo = get_todo()
+        if todo.startTime == "-1":
+            trouble_level = 0
+        else:
+            start_time = datetime.strptime(todo.startTime, "%Y-%m-%d %H:%M")
+            current_time = datetime.now()
+            diff_minutes = (current_time - start_time).total_seconds() / 60
+            task_time = todo.time
+
+            if diff_minutes >= task_time * 2:
+                trouble_level = 10
+            elif diff_minutes <= task_time:
+                trouble_level = 5 * diff_minutes / task_time
+            else:
+                trouble_level = 5 + 5 * (diff_minutes - task_time) / task_time
+
+            trouble_level = round(trouble_level)
+
+        return {
+            "worker": todo.worker,
+            "task": todo.task,
+            "time": todo.time,
+            "trouble_level": trouble_level
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get Todo: {str(e)}")
     
 @app.put("/todo/put/start")
-async def start_time_put(todo: Todo, status_code=201):
+async def start_time_put(startTime: startTime, status_code=201):
     time_now = get_time_now()
     start_data = {
         "app": APPID,
-        "id": todo.id,
+        "id": startTime.id,
         "record":{
             "startTime": {
                 "value": time_now
@@ -76,14 +97,4 @@ async def start_time_put(todo: Todo, status_code=201):
         return put_start_time(start_data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to put StartTime: {str(e)}")
-
-# @app.post("/qa_archive/post")
-# async def qa_archive_register(qa_archive: qa_archive, status_code=201):
-
-#     qa_archive_data = qa_archive.model_dump()
-
-#     try:
-#         await (qa_archive_data)
-#         return {"message": "QA Archive registered successfully"}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Failed to register QA Archive: {str(e)}")
+    
