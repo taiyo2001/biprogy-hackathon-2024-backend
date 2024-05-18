@@ -54,7 +54,7 @@ def put_start_time(params):
 
     return resp
 
-if __name__=="__main__":
+# if __name__=="__main__":
     # POST
     # resp=post_todo(PARAMS)
     # print(resp.text)
@@ -76,5 +76,5 @@ if __name__=="__main__":
     #     print("Error:", resp.status_code)
 
     # PUT
-    resp = put_start_time(PARAMS)
-    print(resp)
+    # resp = put_start_time(PARAMS)
+    # print(resp)
