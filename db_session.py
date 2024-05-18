@@ -8,19 +8,31 @@ URL="https://cnkgbbz9x1h5.cybozu.com/k/v1/"
 APPID=1
 API_TOKEN=os.getenv("API_TOKEN")
 
-PARAMS={
-  "app":APPID,
-  "record":{
-    "worker":{
-      "value":"鈴木"
-    },
-    "task":{
-        "value":"すやすや寝る"
-    },
-    "time":{
-        "value":"100"
+# test for post
+# PARAMS={
+#   "app":APPID,
+#   "record":{
+#     "worker":{
+#       "value":"鈴木"
+#     },
+#     "task":{
+#         "value":"すやすや寝る"
+#     },
+#     "time":{
+#         "value":"100"
+#     }
+#   }
+# }
+
+# test for put
+PARAMS = {
+    "app": APPID,
+    "id": 2,
+    "record": {
+        "startTime": {
+            "value": "2024-05-18T23:05+09:00"
+        }
     }
-  }
 }
 
 def post_todo(params):
@@ -36,10 +48,16 @@ def get_todo():
 
     return resp.json()
 
+def put_start_time(params):
+    headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
+    resp=requests.put(URL+"record.json", json=params, headers=headers)
+
+    return resp
+
 # if __name__=="__main__":
-#     # POST
-#     resp=post_todo(PARAMS)
-#     print(resp.text)
+    # POST
+    # resp=post_todo(PARAMS)
+    # print(resp.text)
 
     # GET
     # resp = get_todo()
@@ -56,3 +74,7 @@ def get_todo():
     #         print("--------------------")
     # else:
     #     print("Error:", resp.status_code)
+
+    # PUT
+    # resp = put_start_time(PARAMS)
+    # print(resp)
