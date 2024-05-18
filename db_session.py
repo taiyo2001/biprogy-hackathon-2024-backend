@@ -25,15 +25,21 @@ API_TOKEN=os.getenv("API_TOKEN")
 # }
 
 # test for put
-PARAMS = {
-    "app": APPID,
-    "id": 2,
-    "record": {
-        "startTime": {
-            "value": "2024-05-18 23:05"
-        }
-    }
-}
+# PARAMS = {
+#     "app": APPID,
+#     "id": 2,
+#     "record": {
+#         "startTime": {
+#             "value": "2024-05-18 23:05"
+#         }
+#     }
+# }
+
+# test for delete
+# PARAMS = {
+#     "app": APPID,
+#     "ids": [2]
+# }
 
 def post_todo(params):
     headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
@@ -51,6 +57,12 @@ def get_todo():
 def put_start_time(params):
     headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
     resp=requests.put(URL+"record.json", json=params, headers=headers)
+
+    return resp
+
+def delete_todo(params):
+    headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
+    resp=requests.delete(URL+"records.json", json=params, headers=headers)
 
     return resp
 
@@ -77,4 +89,8 @@ def put_start_time(params):
 
     # PUT
     # resp = put_start_time(PARAMS)
+    # print(resp)
+
+    # DELETE
+    # resp = delete_todo(PARAMS)
     # print(resp)
