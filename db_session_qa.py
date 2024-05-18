@@ -8,20 +8,20 @@ URL="https://cnkgbbz9x1h5.cybozu.com/k/v1/"
 APPID=1
 API_TOKEN=os.getenv("API_TOKEN")
 
-PARAMS={
-  "app":APPID,
-  "record":{
-    "worker":{
-      "value":"鈴木"
-    },
-    "task":{
-        "value":"すやすや寝る"
-    },
-    "time":{
-        "value":"100"
-    }
-  }
-}
+# PARAMS={
+#   "app":APPID,
+#   "record":{
+#     "worker":{
+#       "value":"鈴木"
+#     },
+#     "task":{
+#         "value":"すやすや寝る"
+#     },
+#     "time":{
+#         "value":"100"
+#     }
+#   }
+# }
 PARAMS={
     "app": APPID,
     "record":{

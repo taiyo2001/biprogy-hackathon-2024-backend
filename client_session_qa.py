@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from db_session import post_todo, get_todo
+from db_session_qa import post_qa, get_qa
 import json
 
 app = FastAPI()
