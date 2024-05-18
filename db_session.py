@@ -23,36 +23,36 @@ PARAMS={
   }
 }
 
-def post_kintone(url,api_token,params):
-    headers={"X-Cybozu-API-Token":api_token,"Content-Type":"application/json"}
-    resp=requests.post(url+"record.json",json=params,headers=headers)
+def post_kintone(params):
+    headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
+    resp=requests.post(URL+"record.json",json=params,headers=headers)
 
     return resp
 
-def get_kintone(url, api_token, app_id):
-    headers={"X-Cybozu-API-Token":api_token}
-    params = {"app": app_id}
-    resp = requests.get(url + "records.json", headers=headers, params=params)
+def get_kintone():
+    headers={"X-Cybozu-API-Token":API_TOKEN}
+    params = {"app": APPID}
+    resp = requests.get(URL + "records.json", headers=headers, params=params)
 
     return resp
 
 if __name__=="__main__":
     # POST
-    # resp=post_kintone(URL,API_TOKEN,PARAMS)
-    # print(resp.text)
+    resp=post_kintone(PARAMS)
+    print(resp.text)
 
     # GET
-    resp = get_kintone(URL, API_TOKEN, APPID)
-    if resp.status_code == 200:
-        data = resp.json()
-        records = data.get("records", [])
-        for record in records:
-            task = record.get("task", {}).get("value", "")
-            time = record.get("time", {}).get("value", "")
-            worker = record.get("worker", {}).get("value", "")
-            print("Task:", task)
-            print("Time:", time)
-            print("Worker:", worker)
-            print("--------------------")
-    else:
-        print("Error:", resp.status_code)
+    # resp = get_kintone()
+    # if resp.status_code == 200:
+    #     data = resp.json()
+    #     records = data.get("records", [])
+    #     for record in records:
+    #         task = record.get("task", {}).get("value", "")
+    #         time = record.get("time", {}).get("value", "")
+    #         worker = record.get("worker", {}).get("value", "")
+    #         print("Task:", task)
+    #         print("Time:", time)
+    #         print("Worker:", worker)
+    #         print("--------------------")
+    # else:
+    #     print("Error:", resp.status_code)
