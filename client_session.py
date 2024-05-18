@@ -9,6 +9,7 @@ class Todo(BaseModel):
     worker: str
     task: str
     time: int
+    id: str
 
 class qa_archive(BaseModel):
     questioner: str
@@ -18,14 +19,12 @@ class qa_archive(BaseModel):
     evaluation: int
     comment: str
 
-class startTime(BaseModel):
-    id: int
 
 APPID=1
 
 def get_time_now():
     time_now = datetime.datetime.now()
-    time_data = time_now.strftime("%Y-%m-%dT%H:%M+09:00")
+    time_data = time_now.strftime("%Y-%m-%d %H:%M")
     return time_data
 
 
@@ -62,11 +61,11 @@ async def todo_get():
         raise HTTPException(status_code=500, detail=f"Failed to get Todo: {str(e)}")
     
 @app.put("/todo/put/start")
-async def start_time_put(startTime: startTime, status_code=201):
+async def start_time_put(todo: Todo, status_code=201):
     time_now = get_time_now()
     start_data = {
         "app": APPID,
-        "id": startTime.id,
+        "id": todo.id,
         "record":{
             "startTime": {
                 "value": time_now
