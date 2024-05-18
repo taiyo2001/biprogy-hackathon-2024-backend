@@ -23,13 +23,13 @@ PARAMS={
   }
 }
 
-def post_kintone(params):
+def post_todo(params):
     headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
     resp=requests.post(URL+"record.json",json=params,headers=headers)
 
     return resp
 
-def get_kintone():
+def get_todo():
     headers={"X-Cybozu-API-Token":API_TOKEN}
     params = {"app": APPID}
     resp = requests.get(URL + "records.json", headers=headers, params=params)
@@ -38,11 +38,11 @@ def get_kintone():
 
 if __name__=="__main__":
     # POST
-    resp=post_kintone(PARAMS)
+    resp=post_todo(PARAMS)
     print(resp.text)
 
     # GET
-    # resp = get_kintone()
+    # resp = get_todo()
     # if resp.status_code == 200:
     #     data = resp.json()
     #     records = data.get("records", [])
