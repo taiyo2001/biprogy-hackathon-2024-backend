@@ -5,7 +5,7 @@ import os
 import requests
 
 URL="https://cnkgbbz9x1h5.cybozu.com/k/v1/"
-APPID=1
+APPID=4
 API_TOKEN=os.getenv("API_TOKEN")
 
 # PARAMS={
@@ -26,22 +26,22 @@ PARAMS={
     "app": APPID,
     "record":{
         "questioner":{
-            "value":質問者 
+            "value":"質問者" 
         },
         "respondent":{
-            "value": 回答者
+            "value": "回答者"
         },
         "question":{
-        "value": 質問
+        "value": "質問"
         },
         "answer":{
-            "value": 答え
+            "value": "答え"
         },
         "evaluation":{
             "value": 1
         },
         "comment":{
-            "value": 良い質問
+            "value": "良い質問"
         }
             
     }
@@ -60,10 +60,10 @@ def get_qa():
 
     return resp.json()
 
-# if __name__=="__main__":
-#     # POST
-#     resp=post_todo(PARAMS)
-#     print(resp.text)
+if __name__=="__main__":
+    # POST
+    resp=post_qa(PARAMS)
+    print(resp.text)
 
     # GET
     # resp = get_todo()

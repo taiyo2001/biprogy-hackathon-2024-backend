@@ -18,7 +18,7 @@ class qa_archive(BaseModel):
     evaluation: int
     comment: str
 
-APPID=1
+APPID=4
 
 @app.post("/qa/post")
 async def qa_register(qa: qa_archive, status_code=201):
