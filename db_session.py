@@ -73,6 +73,7 @@ def delete_todo(params):
 
     # GET
     # resp = get_todo()
+    # print(resp)
     # if resp.status_code == 200:
     #     data = resp.json()
     #     records = data.get("records", [])

@@ -12,6 +12,7 @@ class Todo(BaseModel):
     task: str
     time: int
     startTime: Optional[str]
+    id: int
 
     @classmethod
     def from_dict(cls, obj: dict):
@@ -19,7 +20,8 @@ class Todo(BaseModel):
             worker=obj['worker']['value'],
             task=obj['task']['value'],
             time=int(obj['time']['value']),
-            startTime=obj['startTime']['value']
+            startTime=obj['startTime']['value'],
+            id=obj['レコード番号']['value']
         )
 
 class startTime(BaseModel):
@@ -95,7 +97,8 @@ async def todo_get():
                     "worker": todo.worker,
                     "task": todo.task,
                     "time": todo.time,
-                    "trouble_level": trouble_level
+                    "trouble_level": trouble_level,
+                    "id": todo.id
                 })
 
             return results
