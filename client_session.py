@@ -14,7 +14,7 @@ async def handler(request:Request, exc:RequestValidationError):
     return JSONResponse(content={}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
-class Todo(BaseModel):
+class PostTodo(BaseModel):
     worker: str
     task: str
     time: int
@@ -27,7 +27,23 @@ class Todo(BaseModel):
             task=obj['task']['value'],
             time=int(obj['time']['value']),
             startTime=obj['startTime']['value'],
-            id=int(obj['レコード番号']['value'])
+        )
+
+class GetTodo(BaseModel):
+    worker: str
+    task: str
+    time: int
+    startTime: Optional[str]
+    id: int
+
+    @classmethod
+    def from_dict(cls, obj: dict):
+        return cls(
+            worker=obj['worker']['value'],
+            task=obj['task']['value'],
+            time=int(obj['time']['value']),
+            startTime=obj['startTime']['value'],
+            id=obj['レコード番号']['value']
         )
 
 class startTime(BaseModel):
@@ -58,7 +74,7 @@ def calculate_trouble_level(start_time, task_time):
     return round(trouble_level), round(diff_minutes - task_time)
 
 @app.post("/todo/post")
-async def todo_register(todo: Todo, status_code=201):
+async def todo_register(todo: PostTodo, status_code=201):
     # todo_data = todo.model_dump()
 
     todo_data = {
@@ -84,16 +100,16 @@ async def todo_register(todo: Todo, status_code=201):
         return {"message": "Todo registered successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to register Todo: {str(e)}")
-    
+
 @app.get("/todo/get")
 async def todo_get():
     try:
-        response = get_todo()  
+        response = get_todo()
         results = []
-        
+
         if 'records' in response:
             for record in response['records']:
-                todo = Todo.from_dict(record)
+                todo = GetTodo.from_dict(record)
 
                 if todo.startTime == "-1":
                     trouble_level = 0
@@ -114,12 +130,12 @@ async def todo_get():
                 })
 
             return results
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get Todo: {str(e)}")
-    
+
 @app.put("/todo/put/start")
-async def start_time_put(id, status_code=201):
+async def start_time_put(id: int, status_code=201):
     time_now = get_time_now()
     start_data = {
         "app": APPID,
@@ -134,14 +150,14 @@ async def start_time_put(id, status_code=201):
         put_start_time(start_data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to put StartTime: {str(e)}")
-    
+
 @app.delete("/todo/put/end")
-async def delete_todo(endTodo: endTodo, status_code=201):
+async def delete_todo(id: int, status_code=201):
     end_data = {
         "app": APPID,
-        "ids": [endTodo.id]
+        "ids": [id]
     }
     try:
-        return delete_todo(end_data)
+        delete_todo(end_data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to put StartTime: {str(e)}")

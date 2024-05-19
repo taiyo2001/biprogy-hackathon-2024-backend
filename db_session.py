@@ -66,7 +66,7 @@ def delete_todo(params):
     headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
     resp=requests.delete(URL+"records.json", json=params, headers=headers)
 
-    return resp
+    return resp.json()
 
 # if __name__=="__main__":
     # POST
