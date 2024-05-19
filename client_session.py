@@ -5,6 +5,22 @@ from datetime import datetime
 from typing import Optional, List
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from db_session_qa import post_qa, get_qa
+
+app = FastAPI()
+
+class Todo(BaseModel):
+    worker: str
+    task: str
+    time: int
+
+class qa_archive(BaseModel):
+    questioner: str
+    respondent: str
+    question: str
+    answer: str
+    evaluation: int
+    comment: str
 
 app = FastAPI()
 
@@ -53,6 +69,7 @@ class endTodo(BaseModel):
     id: int
 
 APPID=1
+QA_APP_ID=4
 
 def get_time_now():
     time_now = datetime.now()
@@ -161,3 +178,45 @@ async def delete_todo(id: int, status_code=201):
         delete_todo(end_data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to put StartTime: {str(e)}")
+
+@app.get("/qa/get")
+async def qa_get():
+    try:
+        return get_qa()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get Qa: {str(e)}")
+
+@app.post("/qa/post")
+async def qa_register(qa: qa_archive, status_code=201):
+    # todo_data = todo.model_dump()
+
+    qa_data = {
+        "app": QA_APP_ID,
+        "record":{
+            "questioner":{
+                "value": qa.questioner
+            },
+            "respondent":{
+                "value": qa.respondent
+            },
+            "question":{
+                "value": qa.question
+            },
+            "answer":{
+                "value": qa.answer
+            },
+            "evaluation":{
+                "value": qa.evaluation
+            },
+            "comment":{
+                "value": qa.comment
+            }
+            
+        }
+    }
+
+    try:
+        post_qa(qa_data)
+        return {"message": "Qa registered successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to register Qa: {str(e)}")

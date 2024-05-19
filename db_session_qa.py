@@ -6,7 +6,7 @@ import requests
 
 URL="https://cnkgbbz9x1h5.cybozu.com/k/v1/"
 APPID=4
-API_TOKEN=os.getenv("API_TOKEN")
+API_TOKEN=os.getenv("QA_API_TOKEN")
 
 # PARAMS={
 #   "app":APPID,

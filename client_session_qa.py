@@ -58,6 +58,7 @@ async def qa_register(qa: qa_archive, status_code=201):
 
 @app.get("/qa/get")
 async def qa_get():
+    print('!!!!!!!!!!!')
     try:
         return get_qa()
     except Exception as e:
