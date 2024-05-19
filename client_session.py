@@ -38,12 +38,11 @@ def calculate_trouble_level(start_time, task_time):
     current_time = datetime.now()
     diff_minutes = (current_time - start_time).total_seconds() / 60
 
-    if diff_minutes >= task_time * 2:
-        trouble_level = 10
-    elif diff_minutes <= task_time:
-        trouble_level = 5 * diff_minutes / task_time
+    if diff_minutes <= task_time:
+        trouble_level = 1 + 4 * (diff_minutes / task_time) 
     else:
-        trouble_level = 5 + 5 * (diff_minutes - task_time) / task_time
+        over_time_ratio = (diff_minutes - task_time) / task_time
+        trouble_level = 6 + 4 * min(over_time_ratio, 1) 
 
     return round(trouble_level), round(diff_minutes - task_time)
 
