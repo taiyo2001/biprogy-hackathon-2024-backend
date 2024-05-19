@@ -4,6 +4,8 @@ load_dotenv()
 import os
 import requests
 
+from fastapi.encoders import jsonable_encoder
+
 URL="https://cnkgbbz9x1h5.cybozu.com/k/v1/"
 APPID=1
 API_TOKEN=os.getenv("API_TOKEN")
@@ -27,13 +29,19 @@ API_TOKEN=os.getenv("API_TOKEN")
 # test for put
 PARAMS = {
     "app": APPID,
-    "id": 2,
+    "id": 3,
     "record": {
         "startTime": {
-            "value": "2024-05-18 23:05"
+            "value": "2024-05-19 13:05"
         }
     }
 }
+
+# test for delete
+# PARAMS = {
+#     "app": APPID,
+#     "ids": [2]
+# }
 
 def post_todo(params):
     headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
@@ -52,6 +60,12 @@ def put_start_time(params):
     headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
     resp=requests.put(URL+"record.json", json=params, headers=headers)
 
+    return resp.json()
+
+def delete_todo(params):
+    headers={"X-Cybozu-API-Token":API_TOKEN,"Content-Type":"application/json"}
+    resp=requests.delete(URL+"records.json", json=params, headers=headers)
+
     return resp
 
 # if __name__=="__main__":
@@ -61,6 +75,7 @@ def put_start_time(params):
 
     # GET
     # resp = get_todo()
+    # print(resp)
     # if resp.status_code == 200:
     #     data = resp.json()
     #     records = data.get("records", [])
@@ -77,4 +92,9 @@ def put_start_time(params):
 
     # PUT
     # resp = put_start_time(PARAMS)
+    # print(PARAMS)
+    # print(resp)
+
+    # DELETE
+    # resp = delete_todo(PARAMS)
     # print(resp)

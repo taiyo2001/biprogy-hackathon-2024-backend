@@ -1,18 +1,25 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, status
 from pydantic import BaseModel
 from db_session import post_todo, get_todo, put_start_time
 from datetime import datetime
 from typing import Optional, List
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
+
+@app.exception_handler(RequestValidationError)
+async def handler(request:Request, exc:RequestValidationError):
+    print(exc)
+    return JSONResponse(content={}, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
 
 class Todo(BaseModel):
     worker: str
     task: str
     time: int
-    startTime: Optional[str]
-    id: int
-
+    startTime: str
+      
     @classmethod
     def from_dict(cls, obj: dict):
         return cls(
@@ -20,17 +27,21 @@ class Todo(BaseModel):
             task=obj['task']['value'],
             time=int(obj['time']['value']),
             startTime=obj['startTime']['value'],
-            id=obj['レコード番号']['value']
+            id=int(obj['レコード番号']['value'])
         )
 
 class startTime(BaseModel):
     id: int
 
+class endTodo(BaseModel):
+    id: int
+
 APPID=1
 
 def get_time_now():
-    time_now = datetime.datetime.now()
-    time_data = time_now.strftime("%Y-%m-%dT%H:%M+09:00")
+    time_now = datetime.now()
+    time_data = time_now.strftime("%Y-%m-%d %H:%M")
+    print(time_data)
     return time_data
 
 def calculate_trouble_level(start_time, task_time):
@@ -109,11 +120,11 @@ async def todo_get():
         raise HTTPException(status_code=500, detail=f"Failed to get Todo: {str(e)}")
     
 @app.put("/todo/put/start")
-async def start_time_put(startTime: startTime, status_code=201):
+async def start_time_put(id, status_code=201):
     time_now = get_time_now()
     start_data = {
         "app": APPID,
-        "id": startTime.id,
+        "id": int(id),
         "record":{
             "startTime": {
                 "value": time_now
@@ -121,7 +132,17 @@ async def start_time_put(startTime: startTime, status_code=201):
         }
     }
     try:
-        return put_start_time(start_data)
+        put_start_time(start_data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to put StartTime: {str(e)}")
     
+@app.delete("/todo/put/end")
+async def delete_todo(endTodo: endTodo, status_code=201):
+    end_data = {
+        "app": APPID,
+        "ids": [endTodo.id]
+    }
+    try:
+        return delete_todo(end_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to put StartTime: {str(e)}")
