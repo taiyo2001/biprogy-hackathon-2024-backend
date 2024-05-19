@@ -19,7 +19,7 @@ class Todo(BaseModel):
     task: str
     time: int
     startTime: str
-
+      
     @classmethod
     def from_dict(cls, obj: dict):
         return cls(
@@ -44,6 +44,19 @@ def get_time_now():
     print(time_data)
     return time_data
 
+def calculate_trouble_level(start_time, task_time):
+    start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M")
+    current_time = datetime.now()
+    diff_minutes = (current_time - start_time).total_seconds() / 60
+
+    if diff_minutes >= task_time * 2:
+        trouble_level = 10
+    elif diff_minutes <= task_time:
+        trouble_level = 5 * diff_minutes / task_time
+    else:
+        trouble_level = 5 + 5 * (diff_minutes - task_time) / task_time
+
+    return round(trouble_level), round(diff_minutes - task_time)
 
 @app.post("/todo/post")
 async def todo_register(todo: Todo, status_code=201):
@@ -85,27 +98,20 @@ async def todo_get():
 
                 if todo.startTime == "-1":
                     trouble_level = 0
+                    over_time = 0
                 else:
-                    start_time = datetime.strptime(todo.startTime, "%Y-%m-%d %H:%M")
-                    current_time = datetime.now()
-                    diff_minutes = (current_time - start_time).total_seconds() / 60
+                    start_time = todo.startTime
                     task_time = todo.time
 
-                    if diff_minutes >= task_time * 2:
-                        trouble_level = 10
-                    elif diff_minutes <= task_time:
-                        trouble_level = 5 * diff_minutes / task_time
-                    else:
-                        trouble_level = 5 + 5 * (diff_minutes - task_time) / task_time
-
-                    trouble_level = round(trouble_level)
+                    trouble_level, over_time = calculate_trouble_level(start_time, task_time)
 
                 results.append({
                     "worker": todo.worker,
                     "task": todo.task,
                     "time": todo.time,
                     "trouble_level": trouble_level,
-                    "id": todo.id
+                    "id": todo.id,
+                    "over_time": over_time
                 })
 
             return results
