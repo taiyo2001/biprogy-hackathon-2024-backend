@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from client_session import app as client_app
+from client_session_qa import app as qa_app
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -20,6 +21,7 @@ app.add_middleware(
 
 # client_app のルートを含める
 app.mount("/", client_app)
+app.moout("/", qa_app)
 
 # アプリケーションの起動コード
 if __name__ == "__main__":
