@@ -21,7 +21,7 @@ app.add_middleware(
 
 # client_app のルートを含める
 app.mount("/", client_app)
-app.moout("/", qa_app)
+app.mount("/", qa_app)
 
 # アプリケーションの起動コード
 if __name__ == "__main__":
